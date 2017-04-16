@@ -7,4 +7,3 @@
 .externalNativeBuild
 /.idea/workspace.xml
 /.idea/libraries
-!/app/build.gradle
