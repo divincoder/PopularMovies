@@ -4,10 +4,10 @@
     <string name="movie_image">Movie Image</string>
     <string name="internet">No Internet Connection, Please make sure your device is connected to the Internet</string>
     <string name="title">%s Movies</string>
-    <string name="api_key">Put your key here</string>
+    <string name="api_key">api key here</string>
     <string name="toast_error">An error occurred, please check your internet connection and try again</string>
     <string name="sort">sort</string>
     <string name="top_rated">Top Rated</string>
     <string name="vote_average">%.1f/10</string>
-    <string name="movie_plot">A Story about a new baby\'s arival impacts a family, told from the point of view of a delightfully unreliable narrator, a wildly imaginative 7 year old named TIM</string>
+    <string name="movie_plot">A Story about a new baby\'s arrival impacts a family, told from the point of view of a delightfully unreliable narrator, a wildly imaginative 7 year old named TIM</string>
 </resources>
