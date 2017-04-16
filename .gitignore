@@ -1,13 +1,9 @@
 *.iml
 .gradle/
-build/
+/build
 /local.properties
 .DS_Store
 /captures
 .externalNativeBuild
-/app/app.iml
-PopularMovies.iml
-
-
-.idea
-build.gradle
+/.idea/workspace.xml
+/.idea/libraries
