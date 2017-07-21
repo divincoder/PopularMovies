@@ -1,13 +1,9 @@
-package com.example.ofoegbuvalentine.popularmovies.model;
+package com.example.ofoegbuvalentine.popularmovies.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
-
-/**
- * Created by Ofoegbu Valentine on 16/04/2017.
- */
 
 public class Movie implements Parcelable {
 
@@ -22,6 +18,8 @@ public class Movie implements Parcelable {
             return new Movie[size];
         }
     };
+    @SerializedName("id")
+    private Integer movieId;
     @SerializedName("overview")
     private String overview;
     @SerializedName("release_date")
@@ -49,7 +47,40 @@ public class Movie implements Parcelable {
         posterUrl = in.readString();
         backdropPath = in.readString();
         backdropUrl = in.readString();
+        movieId = in.readInt();
 
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setVoteAverage(Double voteAverage) {
+        this.voteAverage = voteAverage;
+    }
+
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
+
+    public void setBackdropPath(String backdropPath) {
+        this.backdropPath = backdropPath;
+    }
+
+    public void setBackdropUrl(String backdropUrl) {
+        this.backdropUrl = backdropUrl;
+    }
+
+    public void setPosterUrl(String posterUrl) {
+        this.posterUrl = posterUrl;
     }
 
     public String getOverview() {
@@ -68,7 +99,7 @@ public class Movie implements Parcelable {
         return voteAverage;
     }
 
-    private String getPosterPath() {
+    public String getPosterPath() {
         return posterPath;
     }
 
@@ -82,6 +113,14 @@ public class Movie implements Parcelable {
 
     public String getBackdropUrl() {
         return backdropUrl + getBackdropPath();
+    }
+
+    public Integer getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(Integer movieId) {
+        this.movieId = movieId;
     }
 
     @Override
@@ -99,5 +138,6 @@ public class Movie implements Parcelable {
         dest.writeString(posterUrl);
         dest.writeString(backdropPath);
         dest.writeString(backdropUrl);
+        dest.writeInt(movieId);
     }
 }

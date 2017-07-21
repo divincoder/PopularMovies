@@ -1,12 +1,11 @@
-package com.example.ofoegbuvalentine.popularmovies.controller;
+package com.example.ofoegbuvalentine.popularmovies.activty;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -16,12 +15,14 @@ import android.view.MenuItem;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.ofoegbuvalentine.popularmovies.MovieAdapter;
+import com.example.ofoegbuvalentine.popularmovies.adapter.MovieAdapter;
 import com.example.ofoegbuvalentine.popularmovies.NetworkChecker;
 import com.example.ofoegbuvalentine.popularmovies.R;
 import com.example.ofoegbuvalentine.popularmovies.api.Client;
 import com.example.ofoegbuvalentine.popularmovies.api.Service;
-import com.example.ofoegbuvalentine.popularmovies.model.Movie;
+import com.example.ofoegbuvalentine.popularmovies.data.DatabaseUtils;
+import com.example.ofoegbuvalentine.popularmovies.data.FavoritesContract;
+import com.example.ofoegbuvalentine.popularmovies.data.Movie;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -34,7 +35,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.example.ofoegbuvalentine.popularmovies.MovieAdapter.MOVIE;
+import static com.example.ofoegbuvalentine.popularmovies.adapter.MovieAdapter.MOVIE;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         mMoviesRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.progressBar);toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.progressBar);
+        toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE) || !savedInstanceState.containsKey(SORT_STATE)) {
             if (NetworkChecker.isNetworkConnected(this)) {
                 getMoviesBySortOrder(isTopRated);
@@ -160,6 +162,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void getFavoriteMovies() {
+        mMoviesList = DatabaseUtils.getFavoriteMovies(this);
+        toolbarLayout.setTitle(getString(R.string.title, getString(R.string.favorite)));
+        loadData();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -180,9 +188,12 @@ public class MainActivity extends AppCompatActivity {
             getMoviesBySortOrder(false);
             isTopRated = false;
             item.setTitle(SORT_TOP);
+        } else if (item.getItemId() == R.id.sort_favorite) {
+            getFavoriteMovies();
         }
         return true;
     }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem menuItem = menu.findItem(R.id.sort_order);
@@ -190,6 +201,9 @@ public class MainActivity extends AppCompatActivity {
             menuItem.setTitle(SORT_POPULAR);
         } else {
             menuItem.setTitle(SORT_TOP);
+        }
+        if (isFavoritesAvailable()) {
+            menu.findItem(R.id.sort_favorite).setVisible(true);
         }
         return true;
     }
@@ -202,10 +216,34 @@ public class MainActivity extends AppCompatActivity {
     private void getMoviesBySortOrder(boolean sortChoice) {
         if (sortChoice) {
             toolbarLayout.setTitle(getString(R.string.title, SORT_TOP));
-            getTopRatedMovies();
+            if (NetworkChecker.isNetworkConnected(this)) {
+                getTopRatedMovies();
+            } else {
+
+                NetworkChecker.showDialog(this, android.R.drawable.ic_dialog_alert, R.string.no_network)
+                        .setPositiveButton(R.string.action_settings, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                startActivity(new Intent(Settings.ACTION_SETTINGS));
+                            }
+                        })
+                        .show();
+            }
         } else {
             toolbarLayout.setTitle(getString(R.string.title, SORT_POPULAR));
             getPopularMovies();
         }
+    }
+
+    private boolean isFavoritesAvailable() {
+        String[] projection = {FavoritesContract.MoviesEntry._ID};
+        String selection = FavoritesContract.MoviesEntry._ID + " IS NOT NULL";
+        Cursor cursor = getContentResolver().query(FavoritesContract.MOVIES_CONTENT_URI,
+                projection,
+                selection,
+                null,
+                null,
+                null);
+        return (cursor != null ? cursor.getCount() : 0) > 0;
     }
 }

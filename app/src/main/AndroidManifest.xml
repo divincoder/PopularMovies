@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".controller.MainActivity"
+            android:name=".activty.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -21,9 +21,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".controller.DetailsActivity"
-            android:parentActivityName=".controller.MainActivity">
+        <activity android:name=".activty.DetailsActivity"
+            android:parentActivityName=".activty.MainActivity">
         </activity>
+
+        <provider
+            android:authorities="com.example.ofoegbuvalentine"
+            android:name=".data.FavoritesProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

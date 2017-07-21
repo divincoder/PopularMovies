@@ -1,4 +1,4 @@
-package com.example.ofoegbuvalentine.popularmovies;
+package com.example.ofoegbuvalentine.popularmovies.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,8 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.example.ofoegbuvalentine.popularmovies.controller.DetailsActivity;
-import com.example.ofoegbuvalentine.popularmovies.model.Movie;
+import com.example.ofoegbuvalentine.popularmovies.R;
+import com.example.ofoegbuvalentine.popularmovies.activty.DetailsActivity;
+import com.example.ofoegbuvalentine.popularmovies.data.Movie;
 
 import java.util.List;
 
