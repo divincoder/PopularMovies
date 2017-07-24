@@ -9,4 +9,6 @@
     <dimen name="tv_trailer_size">28sp</dimen>
     <dimen name="tv_reviews_size">28sp</dimen>
     <dimen name="card_view_margin">10dp</dimen>
+    <dimen name="tv_release_date_size">15sp</dimen>
+    <dimen name="layout_margin">16dp</dimen>
 </resources>
