@@ -4,8 +4,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -16,7 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.ofoegbuvalentine.popularmovies.adapter.MovieAdapter;
-import com.example.ofoegbuvalentine.popularmovies.NetworkChecker;
+import com.example.ofoegbuvalentine.popularmovies.Utilities;
 import com.example.ofoegbuvalentine.popularmovies.R;
 import com.example.ofoegbuvalentine.popularmovies.api.Client;
 import com.example.ofoegbuvalentine.popularmovies.api.Service;
@@ -31,6 +33,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,18 +44,25 @@ import static com.example.ofoegbuvalentine.popularmovies.adapter.MovieAdapter.MO
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String BUNDLE_RECYCLER_LAYOUT = "MainActivity.recycler.layout";
     private static final String SORT_STATE = "sort_state";
+    private static final String SORT_TITLE = "sort_title";
     private final static String SORT_TOP = "Top Rated";
     private final static String SORT_POPULAR = "Popular";
+    private final static String SORT_FAVORITE = "Favorite";
     private static final Service API_INTERFACE = Client.getClient().create(Service.class);
     private static final Type TYPE = new TypeToken<List<Movie>>() {
     }.getType();
     private boolean isTopRated = false;
-    private RecyclerView mMoviesRecyclerView;
-    private ProgressBar mLoadingIndicator;
+    private String currentSort = SORT_POPULAR;
+    @BindView(R.id.recycler_view)
+    RecyclerView mMoviesRecyclerView;
+    @BindView(R.id.progressBar)
+    ProgressBar mLoadingIndicator;
+    @BindView(R.id.toolbar_layout)
+    CollapsingToolbarLayout toolbarLayout;
     private ArrayList<Movie> mMoviesList;
     private MovieAdapter mMoviesAdapter;
-    private CollapsingToolbarLayout toolbarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,44 +70,33 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        ButterKnife.bind(this);
 
-        mMoviesRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.progressBar);
-        toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE) || !savedInstanceState.containsKey(SORT_STATE)) {
-            if (NetworkChecker.isNetworkConnected(this)) {
-                getMoviesBySortOrder(isTopRated);
-            } else {
-                NetworkChecker.showDialog(this, android.R.drawable.ic_dialog_alert, R.string.internet)
-                        .setPositiveButton(R.string.action_settings, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                startActivity(new Intent(Settings.ACTION_SETTINGS));
-                            }
-                        })
-                        .show();
-            }
+            getMoviesBySortOrder(isTopRated);
+
         } else if (savedInstanceState.getParcelableArrayList(MOVIE) == null) {
-            if (NetworkChecker.isNetworkConnected(this)) {
-                getMoviesBySortOrder(isTopRated);
-            } else {
-                NetworkChecker.showDialog(this, android.R.drawable.ic_dialog_alert, R.string.internet)
-                        .setPositiveButton(R.string.action_settings, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                startActivity(new Intent(Settings.ACTION_SETTINGS));
-                            }
-                        })
-                        .show();
-            }
+            getMoviesBySortOrder(isTopRated);
+
         } else {
             mMoviesList = savedInstanceState.getParcelableArrayList(MOVIE);
             isTopRated = savedInstanceState.getBoolean(SORT_STATE);
-            if (isTopRated) {
-                toolbarLayout.setTitle(getString(R.string.title, SORT_TOP));
-            } else {
-                toolbarLayout.setTitle(getString(R.string.title, SORT_POPULAR));
+            currentSort = savedInstanceState.getString(SORT_TITLE);
+
+            switch (currentSort) {
+                case SORT_POPULAR:
+                    toolbarLayout.setTitle(getString(R.string.title, SORT_POPULAR));
+                    break;
+                case SORT_TOP:
+                    toolbarLayout.setTitle(getString(R.string.title, SORT_TOP));
+                    break;
+                case SORT_FAVORITE:
+                    toolbarLayout.setTitle(getString(R.string.title, SORT_FAVORITE));
+                    break;
+                default:
+                    toolbarLayout.setTitle(getString(R.string.title, SORT_POPULAR));
             }
+
             loadData();
         }
     }
@@ -105,8 +105,43 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(MOVIE, mMoviesList);
+        outState.putString(SORT_TITLE, currentSort);
         outState.putBoolean(SORT_STATE, isTopRated);
+        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, mMoviesRecyclerView.getLayoutManager().onSaveInstanceState());
     }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Parcelable savedRecyclerState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
+        mMoviesRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerState);
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ActivityCompat.invalidateOptionsMenu(this);
+
+        if (currentSort.equals(SORT_FAVORITE)) {
+            getFavoriteMovies();
+        }
+
+    }
+
+    //Method to show no network connectivity dialog
+    private void showNoConnectionDialog() {
+
+        Utilities.showDialog(this, android.R.drawable.ic_dialog_alert, R.string.internet)
+                .setPositiveButton(R.string.action_settings, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        startActivity(new Intent(Settings.ACTION_SETTINGS));
+                    }
+                })
+                .show();
+    }
+
 
     /**
      * Method to load data in views
@@ -133,9 +168,7 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 mLoadingIndicator.setVisibility(View.INVISIBLE);
                 t.printStackTrace();
-                NetworkChecker.showToast(MainActivity.this, getString(R.string.toast_error), Toast.LENGTH_LONG);
-
-
+                Utilities.showToast(MainActivity.this, getString(R.string.toast_error), Toast.LENGTH_LONG);
             }
         });
     }
@@ -156,16 +189,22 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 mLoadingIndicator.setVisibility(View.INVISIBLE);
                 t.printStackTrace();
-                NetworkChecker.showToast(MainActivity.this, getString(R.string.toast_error), Toast.LENGTH_LONG);
+                Utilities.showToast(MainActivity.this, getString(R.string.toast_error), Toast.LENGTH_LONG);
 
             }
         });
     }
 
     private void getFavoriteMovies() {
-        mMoviesList = DatabaseUtils.getFavoriteMovies(this);
+        ArrayList<Movie> movieList = DatabaseUtils.getFavoriteMovies(this);
+        mMoviesList = movieList;
         toolbarLayout.setTitle(getString(R.string.title, getString(R.string.favorite)));
         loadData();
+
+        if (movieList.size() == 0) {
+            Utilities.showToast(this, "You haven't specified any Favorite movies", Toast.LENGTH_LONG);
+        }
+
     }
 
     @Override
@@ -177,19 +216,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         if (item.getTitle().equals(SORT_TOP)) {
             getMoviesBySortOrder(true);
             isTopRated = true;
+            currentSort = SORT_TOP;
             item.setTitle(SORT_POPULAR);
         } else if (item.getTitle().equals(SORT_POPULAR)) {
             getMoviesBySortOrder(false);
             isTopRated = false;
+            currentSort = SORT_POPULAR;
             item.setTitle(SORT_TOP);
-        } else if (item.getItemId() == R.id.sort_favorite) {
+        } else if (item.getTitle().equals(SORT_FAVORITE)) {
             getFavoriteMovies();
+            currentSort = SORT_FAVORITE;
         }
         return true;
     }
@@ -202,10 +242,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             menuItem.setTitle(SORT_TOP);
         }
+
         if (isFavoritesAvailable()) {
             menu.findItem(R.id.sort_favorite).setVisible(true);
         }
-        return true;
+        return super.onPrepareOptionsMenu(menu);
     }
 
     /**
@@ -216,18 +257,10 @@ public class MainActivity extends AppCompatActivity {
     private void getMoviesBySortOrder(boolean sortChoice) {
         if (sortChoice) {
             toolbarLayout.setTitle(getString(R.string.title, SORT_TOP));
-            if (NetworkChecker.isNetworkConnected(this)) {
+            if (Utilities.isNetworkConnected(this)) {
                 getTopRatedMovies();
             } else {
-
-                NetworkChecker.showDialog(this, android.R.drawable.ic_dialog_alert, R.string.no_network)
-                        .setPositiveButton(R.string.action_settings, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                startActivity(new Intent(Settings.ACTION_SETTINGS));
-                            }
-                        })
-                        .show();
+                showNoConnectionDialog();
             }
         } else {
             toolbarLayout.setTitle(getString(R.string.title, SORT_POPULAR));

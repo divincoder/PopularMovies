@@ -10,7 +10,7 @@ import android.widget.Toast;
  * Created by Ofoegbu Valentine on 16/04/2017.
  */
 
-public class NetworkChecker {
+public class Utilities {
 
     public static boolean isNetworkConnected(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

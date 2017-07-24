@@ -3,4 +3,10 @@
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="image_final_width">32dp</dimen>
+    <dimen name="app_bar2_height">350dp</dimen>
+    <dimen name="text_margins">6dp</dimen>
+    <dimen name="tv_overview_size">18sp</dimen>
+    <dimen name="tv_trailer_size">28sp</dimen>
+    <dimen name="tv_reviews_size">28sp</dimen>
+    <dimen name="card_view_margin">10dp</dimen>
 </resources>

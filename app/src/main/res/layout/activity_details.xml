@@ -1,138 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.ofoegbuvalentine.popularmovies.activty.DetailsActivity">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <FrameLayout
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/myAppBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="@dimen/app_bar2_height"
+        android:fitsSystemWindows="true"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <ImageView
-            android:id="@+id/im_movie_poster"
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapse_toolBar"
             android:layout_width="match_parent"
-            android:layout_height="350dp"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/movie_image"
-            android:scaleType="centerCrop"
-            tools:src="@drawable/cache" />
+            android:layout_height="match_parent"
+            android:background="@color/transparent"
+            app:contentScrim="?attr/colorPrimary"
+            android:fitsSystemWindows="true"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-        <TextView
-            android:id="@+id/tv_movie_title"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|start"
-            android:layout_margin="16dp"
-            android:ellipsize="none"
-            android:minLines="2"
-            android:scrollHorizontally="false"
-            android:textColor="@android:color/white"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            tools:text="Boss Baby" />
+            <ImageView
+                android:id="@+id/im_movie_poster"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/movie_image"
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax"
+                tools:src="@drawable/cache" />
 
-    </FrameLayout>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar2"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/AppTheme.PopupOverlay">
 
-    <LinearLayout
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scroll"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/tv_release_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textStyle="bold"
-            android:textSize="15sp"
-            tools:text="2017-03-16" />
-
-        <TextView
-            android:id="@+id/tv_rating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            tools:text="8.0/10" />
-
-    </LinearLayout>
-
-        <!--Space
-            android:layout_width="match_parent"
-            android:layout_height="10dp" /-->
-
-        <TextView
-            android:id="@+id/tv_overview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:layout_marginLeft="6sp"
-            android:layout_marginRight="6sp"
-            tools:text="@string/movie_plot">
-        </TextView>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/text_margin" />
-
-    <TextView
-        android:id="@+id/tv_trailers"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/trailers"
-        android:textSize="28sp"
-        android:textStyle="bold" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/text_margin" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_trailers"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:listDivider="?android:attr/listDivider"
-        android:orientation="vertical"
-        android:scrollbars="vertical"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        tools:listitem="@layout/trailer_item" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/text_margin" />
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_reviews"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/reviews"
-        android:textSize="28sp"
-        android:textStyle="bold" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/text_margin" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:orientation="horizontal">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_reviews"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:listDivider="?android:attr/listDivider"
-        android:orientation="vertical"
-        android:scrollbars="vertical"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        tools:listitem="@layout/movie_review_item" />
+                <TextView
+                    android:id="@+id/tv_release_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="2017-03-16" />
 
-</LinearLayout>
-</ScrollView>
+                <TextView
+                    android:id="@+id/tv_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="8.0/10" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_overview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/text_margins"
+                android:layout_marginStart="@dimen/text_margins"
+                android:layout_marginRight="@dimen/text_margins"
+                android:layout_marginEnd="@dimen/text_margins"
+                android:textSize="@dimen/tv_overview_size"
+                tools:text="@string/movie_plot" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/text_margin" />
+
+            <TextView
+                android:id="@+id/tv_trailers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/trailers"
+                android:textSize="@dimen/tv_trailer_size"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/text_margin" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_trailers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:listDivider="?android:attr/listDivider"
+                android:orientation="vertical"
+                android:scrollbars="vertical"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                tools:listitem="@layout/trailer_item" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/text_margin" />
+
+            <TextView
+                android:id="@+id/tv_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/reviews"
+                android:textSize="@dimen/tv_reviews_size"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/text_margin" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:listDivider="?android:attr/listDivider"
+                android:orientation="vertical"
+                android:scrollbars="vertical"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                tools:listitem="@layout/movie_review_item" />
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>

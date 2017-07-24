@@ -1,9 +1,11 @@
 package com.example.ofoegbuvalentine.popularmovies.activty;
 
 import android.database.Cursor;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -11,7 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.ofoegbuvalentine.popularmovies.NetworkChecker;
+import com.example.ofoegbuvalentine.popularmovies.Utilities;
 import com.example.ofoegbuvalentine.popularmovies.R;
 import com.example.ofoegbuvalentine.popularmovies.adapter.MovieReviewsAdapter;
 import com.example.ofoegbuvalentine.popularmovies.adapter.MovieTrailerAdapter;
@@ -41,9 +43,6 @@ import static com.example.ofoegbuvalentine.popularmovies.adapter.MovieAdapter.MO
 public class DetailsActivity extends AppCompatActivity {
 
     private static final Service API_INTERFACE = Client.getClient().create(Service.class);
-
-    @BindView(R.id.tv_movie_title)
-    TextView mMovieTitle;
     @BindView(R.id.tv_rating)
     TextView mMovieRating;
     @BindView(R.id.tv_release_date)
@@ -60,31 +59,41 @@ public class DetailsActivity extends AppCompatActivity {
     TextView mReview;
     @BindView(R.id.tv_trailers)
     TextView mTrailer;
+    @BindView(R.id.collapse_toolBar)
+    CollapsingToolbarLayout toolbarLayout;
     private ArrayList<Trailer> mTrailersList = new ArrayList<>();
     private ArrayList<Review> mReviewsList = new ArrayList<>();
     private MovieTrailerAdapter mTrailerAdapter;
     private MovieReviewsAdapter mReviewsAdapter;
     private Movie selectedMovie;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
 
-        selectedMovie = getIntent().getParcelableExtra(MOVIE);
+        if(getIntent() != null){
 
-        mMovieTitle.setText(selectedMovie.getTitle());
-        mMovieRating.append("User Ratings \n" + getString(R.string.vote_average, selectedMovie.getVoteAverage()));
-        mMovieReleaseDate.append("Release Date \n" + selectedMovie.getReleaseDate());
-        mMovieOverview.setText(selectedMovie.getOverview());
-        Glide.with(this)
-                .load(selectedMovie.getPosterUrl())
-                .into(mMoviePoster);
+            selectedMovie = getIntent().getParcelableExtra(MOVIE);
+            toolbarLayout.setTitle(selectedMovie.getTitle());
+            mMovieRating.append("User Ratings \n" + getString(R.string.vote_average, selectedMovie.getVoteAverage()));
+            mMovieReleaseDate.append("Release Date \n" + selectedMovie.getReleaseDate());
+            mMovieOverview.setText(selectedMovie.getOverview());
+            Glide.with(this)
+                    .load(selectedMovie.getPosterUrl())
+                    .error(R.drawable.ic_error_black_24dp)
+                    .into(mMoviePoster);
 
-        getMovieTrailers();
-        getMovieReviews();
+            getMovieTrailers();
+            getMovieReviews();
+        } else {
+            Utilities.showToast(this, getString(R.string.error_toast), Toast.LENGTH_LONG);
+        }
+
     }
 
     private void getMovieTrailers() {
@@ -103,7 +112,7 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 t.printStackTrace();
-                NetworkChecker.showToast(DetailsActivity.this, getString(R.string.error_toast), Toast.LENGTH_LONG);
+                Utilities.showToast(DetailsActivity.this, getString(R.string.error_toast), Toast.LENGTH_LONG);
             }
         });
     }
@@ -124,7 +133,7 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 t.printStackTrace();
-                NetworkChecker.showToast(DetailsActivity.this, getString(R.string.error_toast), Toast.LENGTH_LONG);
+                Utilities.showToast(DetailsActivity.this, getString(R.string.error_toast), Toast.LENGTH_LONG);
             }
         });
     }
