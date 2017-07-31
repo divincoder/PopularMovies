@@ -2,15 +2,19 @@ package com.example.ofoegbuvalentine.popularmovies.activty;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -63,24 +67,25 @@ public class MainActivity extends AppCompatActivity {
     CollapsingToolbarLayout toolbarLayout;
     private ArrayList<Movie> mMoviesList;
     private MovieAdapter mMoviesAdapter;
+    private GridLayoutManager layoutManager;
+    private Parcelable mListState;
+    private static Bundle mBundleRecyclerViewState;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate called");
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
+        layoutManager = new GridLayoutManager(getApplicationContext(), 2);
+        mMoviesRecyclerView.setLayoutManager(layoutManager);
 
-        if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE) || !savedInstanceState.containsKey(SORT_STATE)) {
-            getMoviesBySortOrder(isTopRated);
+        if (savedInstanceState != null) {
 
-        } else if (savedInstanceState.getParcelableArrayList(MOVIE) == null) {
-            getMoviesBySortOrder(isTopRated);
-
-        } else {
             mMoviesList = savedInstanceState.getParcelableArrayList(MOVIE);
-            isTopRated = savedInstanceState.getBoolean(SORT_STATE);
             currentSort = savedInstanceState.getString(SORT_TITLE);
 
             switch (currentSort) {
@@ -96,37 +101,66 @@ public class MainActivity extends AppCompatActivity {
                 default:
                     toolbarLayout.setTitle(getString(R.string.title, SORT_POPULAR));
             }
-
             loadData();
+
+        } else {
+            getMoviesBySortOrder(isTopRated);
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSavedInstanceState called");
         outState.putParcelableArrayList(MOVIE, mMoviesList);
         outState.putString(SORT_TITLE, currentSort);
         outState.putBoolean(SORT_STATE, isTopRated);
-        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, mMoviesRecyclerView.getLayoutManager().onSaveInstanceState());
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        Parcelable savedRecyclerState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
-        mMoviesRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerState);
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume called");
+        updateFavorites();
         ActivityCompat.invalidateOptionsMenu(this);
+    }
 
+    private void updateFavorites() {
         if (currentSort.equals(SORT_FAVORITE)) {
             getFavoriteMovies();
         }
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: called");
+        mBundleRecyclerViewState = new Bundle();
+        mListState = mMoviesRecyclerView.getLayoutManager().onSaveInstanceState();
+        mBundleRecyclerViewState.putParcelable(BUNDLE_RECYCLER_LAYOUT, mListState);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if (mBundleRecyclerViewState != null){
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mListState = mBundleRecyclerViewState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
+                    mMoviesRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
+                }
+            }, 50);
+        }
+
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            layoutManager.setSpanCount(3);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            layoutManager.setSpanCount(2);
+        }
+        mMoviesRecyclerView.setLayoutManager(layoutManager);
     }
 
     //Method to show no network connectivity dialog
@@ -142,13 +176,14 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
-
     /**
      * Method to load data in views
      */
     private void loadData() {
+
         mLoadingIndicator.setVisibility(View.INVISIBLE);
         mMoviesAdapter = new MovieAdapter(MainActivity.this, mMoviesList);
+        mMoviesAdapter.notifyDataSetChanged();
         mMoviesRecyclerView.setAdapter(mMoviesAdapter);
     }
 

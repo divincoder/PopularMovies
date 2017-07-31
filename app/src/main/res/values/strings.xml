@@ -6,7 +6,7 @@
     <string name="action_sort">sort</string>
     <string name="internet">No Internet Connection, Please make sure your device is connected to the Internet</string>
     <string name="title">%s Movies</string>
-    <string name="api_key">put api key here</string>
+    <string name="api_key">8a3f4cae24ca360eed292d724627db26</string>
     <string name="toast_error">An error occurred, please check your internet connection and try again</string>
     <string name="sort">sort</string>
     <string name="top_rated">Top Rated</string>
@@ -20,4 +20,7 @@
     <string name="no_trailers">No trailers</string>
     <string name="favorite">Favorite</string>
     <string name="no_network">No network connection detected on your Phone, please check your network connection</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
