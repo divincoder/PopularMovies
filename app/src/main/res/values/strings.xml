@@ -6,7 +6,7 @@
     <string name="action_sort">sort</string>
     <string name="internet">No Internet Connection, Please make sure your device is connected to the Internet</string>
     <string name="title">%s Movies</string>
-    <string name="api_key">8a3f4cae24ca360eed292d724627db26</string>
+    <string name="api_key">api key here</string>
     <string name="toast_error">An error occurred, please check your internet connection and try again</string>
     <string name="sort">sort</string>
     <string name="top_rated">Top Rated</string>
