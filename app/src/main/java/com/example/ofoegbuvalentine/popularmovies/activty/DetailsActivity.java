@@ -1,7 +1,11 @@
 package com.example.ofoegbuvalentine.popularmovies.activty;
 
+import android.content.res.Configuration;
 import android.database.Cursor;
+import android.os.Handler;
+import android.os.PersistableBundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -61,11 +65,15 @@ public class DetailsActivity extends AppCompatActivity {
     TextView mTrailer;
     @BindView(R.id.collapse_toolBar)
     CollapsingToolbarLayout toolbarLayout;
+    @BindView(R.id.scroll_view)
+    NestedScrollView scrollView;
     private ArrayList<Trailer> mTrailersList = new ArrayList<>();
     private ArrayList<Review> mReviewsList = new ArrayList<>();
     private MovieTrailerAdapter mTrailerAdapter;
     private MovieReviewsAdapter mReviewsAdapter;
     private Movie selectedMovie;
+    private final String SCROLL_POSITION = "scroll-position";
+    private int[] mPosition = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +84,7 @@ public class DetailsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
 
-        if(getIntent() != null){
+        if (getIntent() != null) {
 
             selectedMovie = getIntent().getParcelableExtra(MOVIE);
             toolbarLayout.setTitle(selectedMovie.getTitle());
@@ -94,6 +102,31 @@ public class DetailsActivity extends AppCompatActivity {
             Utilities.showToast(this, getString(R.string.error_toast), Toast.LENGTH_LONG);
         }
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putIntArray(SCROLL_POSITION, new int[]{scrollView.getScrollX(), scrollView.getScrollY()});
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mPosition = savedInstanceState.getIntArray(SCROLL_POSITION);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (mPosition != null) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    scrollView.scrollTo(mPosition[0], mPosition[1]);
+                }
+            }, 1000);
+        }
     }
 
     private void getMovieTrailers() {

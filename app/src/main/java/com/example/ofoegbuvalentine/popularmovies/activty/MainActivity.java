@@ -225,7 +225,6 @@ public class MainActivity extends AppCompatActivity {
                 mLoadingIndicator.setVisibility(View.INVISIBLE);
                 t.printStackTrace();
                 Utilities.showToast(MainActivity.this, getString(R.string.toast_error), Toast.LENGTH_LONG);
-
             }
         });
     }

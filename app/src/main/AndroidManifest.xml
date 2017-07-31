@@ -24,6 +24,7 @@
         </activity>
         <activity android:name=".activty.DetailsActivity"
             android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation|screenSize"
             android:parentActivityName=".activty.MainActivity">
         </activity>
 

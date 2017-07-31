@@ -18,8 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/transparent"
-            app:contentScrim="?attr/colorPrimary"
             android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <ImageView
@@ -45,7 +45,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
-        android:id="@+id/scroll"
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
@@ -87,10 +87,10 @@
                 android:id="@+id/tv_overview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/text_margins"
-                android:layout_marginStart="@dimen/text_margins"
-                android:layout_marginRight="@dimen/text_margins"
                 android:layout_marginEnd="@dimen/text_margins"
+                android:layout_marginLeft="@dimen/text_margins"
+                android:layout_marginRight="@dimen/text_margins"
+                android:layout_marginStart="@dimen/text_margins"
                 android:textSize="@dimen/tv_overview_size"
                 tools:text="@string/movie_plot" />
 
