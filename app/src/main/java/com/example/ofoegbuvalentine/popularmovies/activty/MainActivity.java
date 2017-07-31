@@ -255,12 +255,10 @@ public class MainActivity extends AppCompatActivity {
             getMoviesBySortOrder(true);
             isTopRated = true;
             currentSort = SORT_TOP;
-            item.setTitle(SORT_POPULAR);
         } else if (item.getTitle().equals(SORT_POPULAR)) {
             getMoviesBySortOrder(false);
             isTopRated = false;
             currentSort = SORT_POPULAR;
-            item.setTitle(SORT_TOP);
         } else if (item.getTitle().equals(SORT_FAVORITE)) {
             getFavoriteMovies();
             currentSort = SORT_FAVORITE;
@@ -270,12 +268,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem menuItem = menu.findItem(R.id.sort_order);
-        if (isTopRated) {
-            menuItem.setTitle(SORT_POPULAR);
-        } else {
-            menuItem.setTitle(SORT_TOP);
-        }
 
         if (isFavoritesAvailable()) {
             menu.findItem(R.id.sort_favorite).setVisible(true);

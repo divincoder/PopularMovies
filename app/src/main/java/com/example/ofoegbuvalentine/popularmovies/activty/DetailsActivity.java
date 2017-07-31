@@ -3,7 +3,6 @@ package com.example.ofoegbuvalentine.popularmovies.activty;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Handler;
-import android.os.PersistableBundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
